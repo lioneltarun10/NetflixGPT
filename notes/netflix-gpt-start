@@ -1,0 +1,29 @@
+npx create-react-app netflix-gpt
+
+This command will give us properly configured bundler (webpack in this case) , testing environment , folder structure and many things for us to start developing without configuring things on our own.
+
+Let us setup our project.
+We will use tailwindcss in our project , so let's stup tailwindcss in our project.
+
+Follow steps of this website - https://tailwindcss.com/docs/guides/create-react-app
+
+We have configured TailwindCSS successfully.
+
+Let's observe netflix website and plan our website layout.
+
+# Features
+- Login/Sign Up
+ - Sign In/Sign Up Form
+ - Redirect to Browse page
+- Browse (after authentication)
+  - Header
+  - Main Movie
+   - Tailer in Background
+   - Title & Description
+   - MovieSuggestions
+    - MovieList * N 
+ - NetflixGPT
+  - Search bar
+  - Movie Suggestions   
+
+  
