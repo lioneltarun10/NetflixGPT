@@ -97,3 +97,206 @@ How do we validate the fields of the form? How to validate if we have lots of fi
 We can use FORMIK library to build forms with lots of fields and validations for those fields.
 
 In this project, we are writting validations on our own
+
+We will cover useRef hook in this project.
+
+
+When we clcik on sign in button , we will validate our form.
+
+We will put our validate.js file in utils folder , which will validate our data.
+
+Now we have created checkValdiData function in validate.js which we will use in Login COMPONENT TO VALIDATE THE DATA , But how do we get the data from form when we click on sign in/sign up? 
+
+we have 2 ways - 
+1) we can create state varaibles for each input tag value and use it.
+
+2) we can use the reference of input tag , to find the value of the input tag.
+
+here's where useRef will come into picture?
+
+So we have used useRef hook to reference the input tag and take their values to validate the data.
+
+import React, { useRef, useState } from 'react'
+import Header from './Header'
+import { checkValidData } from '../utils/validate'
+
+const Login = () => {
+
+  const [isSignInForm,setIsSignInForm] = useState(true)
+ 
+  const [errorMessage,setErrorMessage] = useState(null)
+
+  const name = useRef(null)
+  const email = useRef(null)
+  const password = useRef(null)
+
+ const handleButtonClick = (e) => {
+  // Validate the form data
+
+
+  // console.log(email.current.value);
+  // console.log(password.current.value);
+
+  const message = checkValidData(email.current.value,password.current.value)
+  setErrorMessage(message)
+  // console.log(message);
+
+  // Sign In/ Sign Up
+ }
+ 
+  const toggleSignInForm = () => {
+    setIsSignInForm(!isSignInForm)
+ }
+ 
+
+  return (
+    <div>
+      <Header />
+      <div className='absolute'>
+        <img alt='Logo'
+        src='https://assets.nflxext.com/ffe/siteui/vlv3/fc164b4b-f085-44ee-bb7f-ec7df8539eff/d23a1608-7d90-4da1-93d6-bae2fe60a69b/IN-en-20230814-popsignuptwoweeks-perspective_alpha_website_large.jpg'
+        />
+      </div>
+      <form onSubmit={(e) => e.preventDefault()} className='w-1/4 absolute p-12 bg-black my-36 mx-auto right-0 left-0 text-white rounded-lg bg-opacity-80'>
+        <h1 className='font-bold text-3xl py-4'>{isSignInForm? "Sign In":"Sign Up"}</h1>
+        
+        {!isSignInForm && (<input
+        ref={name}
+        type='text'
+        placeholder='Full Name' 
+        className='p-4 my-4 w-full bg-gray-700' 
+        />)}
+        
+        
+        <input
+        type='text'
+        ref={email}
+        placeholder='Email Address' 
+        className='p-4 my-4 w-full bg-gray-700' 
+        />
+
+
+        <input 
+        type='password' 
+        ref={password}
+        placeholder='Password' 
+        className='p-4 my-4 w-full bg-gray-700' 
+        />
+
+        <p className='text-red-500 font-bold text-lg py-2'>{errorMessage}</p>
+
+
+        <button 
+        className='p-4 my-6 bg-red-600 w-full rounded-lg'
+        onClick={handleButtonClick}
+        >
+        {isSignInForm? "Sign In":"Sign Up"}
+          </button>
+
+          <p className='py-4 cursor-pointer' onClick={toggleSignInForm}>
+            {isSignInForm? "New to Netflix? Sign Up Now":"Already registerd? Sign In Now"}
+            </p>
+      </form>
+    </div>
+  )
+}
+
+export default Login
+
+Now , let's start form authentication.
+
+For authentication , we need backend , for which we use "firebase".
+
+It makes our life easy. Firebase is not jugaad , firebase will handle a lot of things , a lot of companies use firebase in production.
+
+We have deployed our app in firebase.
+
+Follow firebase website for steps to creating a project for our app.
+
+
+After everything is done , steps for deployment is - 
+(Do this steps in bash terminal , if this commands are not working in normal terminal)
+
+1) Install firebase CLI - 'npm install -g firebase-tools'
+2) Firebase Login - 'firebase login'
+3) Initialize Firebase - 'firebase init' , then select hosting our local files option 
+4) Deploy command - 'firebase deploy'
+
+
+We can change the firebase URL to our own domain name also.
+
+We have deployed our App to production.
+
+
+Let's sign up our first user.
+
+Read documentation to understand managing user accounts in firebase. 
+
+Reading documentation is the super power of a developer.
+
+Always use Web modular API (Latest) instead of Web namespaced API.
+
+We can see that for both sign in and sign up logic in the website , 
+
+const auth = getAuth() is used and passed to their respective signIn and signUp functions , which means we can write that statement only once in a file and use it everytime , to reduce the code and improve the structure of code.
+
+
+Finally , we have written the sign In and sign Up case.
+
+const handleButtonClick = (e) => {
+  // Validate the form data
+
+
+  // console.log(email.current.value);
+  // console.log(password.current.value);
+
+  const message = checkValidData(email.current.value,password.current.value)
+  setErrorMessage(message)
+  // console.log(message);
+
+ if(message) return ;
+
+ // Sign In/ Sign Up Logic
+ if(!isSignInForm){
+     // sign up logic
+   
+    createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed up 
+    const user = userCredential.user;
+    console.log(user);
+    
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    
+    setErrorMessage(errorCode+ '-' + errorMessage)
+
+  });
+
+ }else{
+    // sign in logic
+
+  signInWithEmailAndPassword(auth,email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user);
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+
+    setErrorMessage(errorCode+ '-' + errorMessage)
+  });
+ }
+
+
+ }
+
+
+ Now , we might need this user information anytime during the duration if user login , that's why let's store this 'user" variable , a response sent by firebase on login , in redux store and also on login we will redirect our page to /browse page. 
+
+ npm i -D @reduxjs/toolkit
+ npm i react-redux
